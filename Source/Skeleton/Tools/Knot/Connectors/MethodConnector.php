@@ -31,13 +31,22 @@ class MethodConnector extends AbstractObjectToSkeletonConnector
 	private function getAutoloadValue(\ReflectionMethod $method)
 	{
 		$parameter = $method->getParameters()[0];
-		$class = $parameter->getClass();
-		
-		if (is_null($class))
+		$type = $parameter->getType();
+
+		try
 		{
-			throw new \Exception('Method autoload is configured but missing it\'s parameter type: ' . $method->name);
+			if (!($type instanceof \ReflectionNamedType))
+			{
+				throw new \ReflectionException();
+			}
+
+			$class = new \ReflectionClass($type->getName());
 		}
-		
+		catch (\ReflectionException $e)
+		{
+			throw new \Exception(sprintf('Method \'%s\' autoload is configured but it\'s parameter type is missing or not supported', $method->name));
+		}
+
 		return $this->get($class->getName());
 	}
 

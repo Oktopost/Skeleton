@@ -13,15 +13,22 @@ class ConstructorConnector extends AbstractObjectToSkeletonConnector
 	 */
 	private function loadParameter(\ReflectionParameter $parameter)
 	{
-		$class = $parameter->getClass();
-		
-		if (is_null($class))
+		$type = $parameter->getType();
+
+		try
 		{
-			throw new \Exception(
-				'Constructor parameter must be autoloaded but missing parameter type for parameter ' . 
-					$parameter->getName());
+			if (!($type instanceof \ReflectionNamedType))
+			{
+				throw new \ReflectionException();
+			}
+
+			$class = new \ReflectionClass($type->getName());
 		}
-		
+		catch (\ReflectionException $e)
+		{
+			throw new \Exception(sprintf('Constructor parameter must be autoloaded but parameter type for parameter %s is missing or not supported', $parameter->getName()));
+		}
+
 		return $this->get($class->getName());
 	}
 	
