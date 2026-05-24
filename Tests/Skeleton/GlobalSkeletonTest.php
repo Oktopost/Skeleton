@@ -89,6 +89,8 @@ class GlobalSkeletonTest extends \SkeletonTestCase
 		$source->method('get')->with('a', null, true);
 		
 		GlobalSkeleton::instance()->get('a');
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_get_SkeletonsDefined_ReturnedValueReturnedByGlobal()

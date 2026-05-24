@@ -49,6 +49,8 @@ class DirectoryConfigLoaderTest extends \SkeletonTestCase
 	{
 		$l = $this->createLoader(['FileNotExist_NoError/NoConfig']);
 		$l->tryLoad('NotFound');
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_FileNotLoaded_ReturnFalse()

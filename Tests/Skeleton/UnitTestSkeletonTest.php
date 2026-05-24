@@ -169,6 +169,8 @@ class UnitTestSkeletonTest extends \SkeletonTestCase
 		$loader->method('get')->with(\stdClass::class);
 
 		$testSkeleton->load(\stdClass::class);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_load_ContextNotPassed_NullPassedToLoader()
@@ -182,6 +184,8 @@ class UnitTestSkeletonTest extends \SkeletonTestCase
 		$loader->method('get')->with($this->anything(), null);
 
 		$testSkeleton->load(\stdClass::class);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_load_LoaderResultReturned()

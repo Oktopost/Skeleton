@@ -29,6 +29,8 @@ class SimpleMapTest extends \SkeletonTestCase
 	{
 		$map = $this->getSimpleMap();
 		$map->set('a', \stdClass::class);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_set_KeyAlreadySet_ErrorIsThrown()
@@ -46,6 +48,8 @@ class SimpleMapTest extends \SkeletonTestCase
 	{
 		$map = $this->getSimpleMap();
 		$map->forceSet('a', \stdClass::class);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_forceSet_KeyAlreadySet_NoErrorIsThrown()
@@ -54,6 +58,8 @@ class SimpleMapTest extends \SkeletonTestCase
 		$map->set('a', \stdClass::class);
 		
 		$map->forceSet('a', \stdClass::class);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	public function test_forceSet_OverrideTypeWithValue_NewValueIsUsed()
