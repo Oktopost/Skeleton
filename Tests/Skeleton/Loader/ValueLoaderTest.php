@@ -39,6 +39,8 @@ class ValueLoaderTest extends TestCase
 		$knot = $this->mockKnot();
 		
 		$l->setKnot($knot);
+		
+		$this->assertTrue(true); // assert that no exception is thrown
 	}
 	
 	

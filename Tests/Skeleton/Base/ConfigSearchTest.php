@@ -36,9 +36,18 @@ class ConfigSearchTest extends \SkeletonTestCase
 		$map = $this->mockMap();
 		$loader = $this->mockLoader();
 		
-		$loader->expects($this->at(0))->method('tryLoad')->with('some/complex/namespace');
-		$loader->expects($this->at(1))->method('tryLoad')->with('some/complex');
-		$loader->expects($this->at(2))->method('tryLoad')->with('some');
+		$expected = [
+			'some/complex/namespace',
+			'some/complex',
+			'some',
+		];
+		
+		$loader->expects($this->exactly(3))
+			->method('tryLoad')
+			->willReturnCallback(function ($path) use (&$expected) {
+				$this->assertSame(array_shift($expected), $path);
+				return false;
+			});
 		
 		ConfigSearch::searchFor('some\complex\namespace\cls', $map, $loader);
 	}
@@ -48,12 +57,20 @@ class ConfigSearchTest extends \SkeletonTestCase
 		$map = $this->mockMap();
 		$loader = $this->mockLoader();
 		
-		$map->expects($this->at(0))->method('has')->willReturn(true);
 		$map->expects($this->exactly(1))->method('has')->willReturn(true);
 		
-		$loader->expects($this->at(0))->method('tryLoad')->with('some/complex/namespace')->willReturn(false);
-		$loader->expects($this->at(1))->method('tryLoad')->with('some/complex')->willReturn(true);
-		$loader->expects($this->exactly(2))->method('tryLoad')->willReturn(true);
+		$expected = [
+			['some/complex/namespace', false],
+			['some/complex', true],
+		];
+		
+		$loader->expects($this->exactly(2))
+			->method('tryLoad')
+			->willReturnCallback(function ($path) use (&$expected) {
+				[$expectedPath, $return] = array_shift($expected);
+				$this->assertSame($expectedPath, $path);
+				return $return;
+			});
 		
 		ConfigSearch::searchFor('some\complex\namespace\cls', $map, $loader);
 	}

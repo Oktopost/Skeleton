@@ -178,21 +178,21 @@ class ContextTest extends TestCase
 	}
 
 
-	/**
-	 * @expectedException \Skeleton\Exceptions\MissingContextValueException
-	 */
 	public function test_get_ValueNotFound_ExceptionThrown()
 	{
 		$subject = new Context('a', null);
+		
+		$this->expectException(\Skeleton\Exceptions\MissingContextValueException::class);
+		
 		self::assertEquals(123, $subject->get('b'));
 	}
 
-	/**
-	 * @expectedException \Skeleton\Exceptions\MissingContextValueException
-	 */
 	public function test_get_ValueNotFoundWhenParentPresent_ExceptionThrown()
 	{
 		$subject = new Context('a', new Context('b'));
+		
+		$this->expectException(\Skeleton\Exceptions\MissingContextValueException::class);
+		
 		self::assertEquals(123, $subject->get('b'));
 	}
 }

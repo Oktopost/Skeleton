@@ -16,10 +16,15 @@ class ContextManager
 {
 	use TStaticClass;
 	
+	private static ?\WeakMap $contexts = null;
 	
-	public const CONTEXT_PROPERTY_NAME	= '__SKELETON_CONTEXT__';
-
-
+	
+	private static function contexts(): \WeakMap
+	{
+		return self::$contexts ??= new \WeakMap();
+	}
+	
+	
 	/**
 	 * @param ISkeletonSource $source
 	 * @param array|Context $data
@@ -43,7 +48,7 @@ class ContextManager
 		
 	public static function set($instance, IContextReference $context)
 	{
-		$instance->{self::CONTEXT_PROPERTY_NAME} = $context;
+		self::contexts()[$instance] = $context;
 	}
 	
 	public static function get($instance, ISkeletonSource $source): IContextReference
@@ -54,10 +59,10 @@ class ContextManager
 			return new ContextReference($context, $source);
 		}
 		
-		if (!isset($instance->{self::CONTEXT_PROPERTY_NAME}))
+		if (!isset(self::contexts()[$instance]))
 			throw new MissingContextException('There is not context configured for class ' . get_class($instance));
 		
-		return $instance->{self::CONTEXT_PROPERTY_NAME};
+		return self::contexts()[$instance];
 	}
 	
 	public static function init($instance, ISkeletonSource $skeleton, ?string $name = null): Context
@@ -66,15 +71,14 @@ class ContextManager
 		{
 			return new Context($name, $instance);
 		}
-		else if (!isset($instance->{self::CONTEXT_PROPERTY_NAME}))
+		else if (!isset(self::contexts()[$instance]))
 		{
 			$context = new Context($name);
-			$ref = new ContextReference($context, $skeleton);
-			$instance->{self::CONTEXT_PROPERTY_NAME} = $ref;
+			self::contexts()[$instance] = new ContextReference($context, $skeleton);
 			
 			return $context;
 		}
 		
-		return $instance->{self::CONTEXT_PROPERTY_NAME}->context();
+		return self::contexts()[$instance]->context();
 	}
 }

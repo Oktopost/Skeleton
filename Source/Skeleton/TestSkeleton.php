@@ -18,7 +18,7 @@ class TestSkeleton
 	private static $map = null;
 	
 	
-	private static function getProcessMock(string $id = null): ProcessMock
+	private static function getProcessMock(?string $id = null): ProcessMock
 	{
 		if (!self::$processMock)
 		{
@@ -39,7 +39,6 @@ class TestSkeleton
 	private static function overrideIsTestValueInSkeleton(bool $to): void
 	{
 		$r = new \ReflectionProperty(Skeleton::class, '_isTest');
-		$r->setAccessible(true);
 		$r->setValue(null, $to);
 	}
 	
@@ -94,7 +93,7 @@ class TestSkeleton
 	}
 	
 	
-	public static function includeMockFileIfExists(string $id = null): bool
+	public static function includeMockFileIfExists(?string $id = null): bool
 	{
 		return self::getProcessMock($id)->includeIfExists();
 	}
@@ -104,7 +103,7 @@ class TestSkeleton
 		return self::$mockProcessID;
 	}
 	
-	public static function processMock(string $id = null): IProcessMock
+	public static function processMock(?string $id = null): IProcessMock
 	{
 		return self::getProcessMock($id);
 	}

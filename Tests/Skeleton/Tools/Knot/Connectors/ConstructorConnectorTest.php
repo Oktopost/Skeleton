@@ -71,12 +71,12 @@ class ConstructorConnectorTest extends \SkeletonTestCase
 			$this->invokeConnect($obj, test_ConstructorConnector_Helper_EmptyConstructor::class));
 	}
 	
-	/**
-	 * @expectedException \Exception
-	 */
 	public function test_connect_ConstructorWithInvalidParameter_ErrorThrown()
 	{
 		$obj = $this->getConstructorConnector();
+		
+		$this->expectException(\Exception::class);
+		
 		$this->invokeConnect($obj, test_ConstructorConnector_Helper_InvalidType::class);
 	}
 	
@@ -117,8 +117,18 @@ class ConstructorConnectorTest extends \SkeletonTestCase
 	{
 		$obj = $this->getConstructorConnector();
 		
-		$this->skeleton->expects($this->at(0))->method('get')->willReturn(new test_ConstructorConnector_TypeA);
-		$this->skeleton->expects($this->at(1))->method('get')->willReturn(new test_ConstructorConnector_TypeB);
+		$expected = [
+			[test_ConstructorConnector_TypeA::class, new test_ConstructorConnector_TypeA],
+			[test_ConstructorConnector_TypeB::class, new test_ConstructorConnector_TypeB],
+		];
+		
+		$this->skeleton->expects($this->exactly(2))
+			->method('get')
+			->willReturnCallback(function ($key) use (&$expected) {
+				[$expectedKey, $return] = array_shift($expected);
+				$this->assertSame($expectedKey, $key);
+				return $return;
+			});
 			
 		$instance = $this->invokeConnect($obj, test_ConstructorConnector_Helper_NumberOfParams::class);
 		
@@ -152,6 +162,7 @@ class test_ConstructorConnector_Helper_ConstructorWithParam
 
 class test_ConstructorConnector_Helper_NumberOfParams
 {
+	public $a;
 	public $b;
 	
 	public function __construct(

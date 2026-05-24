@@ -147,12 +147,12 @@ class MethodConnectorTest extends \SkeletonTestCase
 		$this->assertSame($returnObject, $instance->getB());
 	}
 	
-	/**
-	 * @expectedException \Exception
-	 */
 	public function test_connect_MethodParameterHasNoType()
 	{
 		$obj = $this->getMethodConnector();
+		
+		$this->expectException(\Exception::class);
+		
 		$this->invokeConnect($obj, test_MethodConnector_Helper_NoType::class);
 	}
 	
@@ -175,13 +175,12 @@ class MethodConnectorTest extends \SkeletonTestCase
 			new test_MethodConnector_cls());
 	}
 
-	/**
-	 * @expectedException \Skeleton\Exceptions\MissingContextException
-	 */
 	public function test_connect_ContextNotSet_ExceptionThrown()
 	{
 		$obj = $this->getMethodConnector();
 		$inst = new test_MethodConnector_Helper_ContextByAnnotation();
+		
+		$this->expectException(\Skeleton\Exceptions\MissingContextException::class);
 		
 		$obj->connect(new \ReflectionClass($inst), $inst, null);
 	}
@@ -204,7 +203,7 @@ class test_MethodConnector_Helper_InvalidMethod
 	/**
 	 * @autoload
 	 */
-	public function setA(test_MethodConnector_TypeA $a = null) {}
+	public function setA(?test_MethodConnector_TypeA $a = null) {}
 	
 	/**
 	 * @autoload
