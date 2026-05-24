@@ -113,7 +113,6 @@ class PropertyConnector extends AbstractObjectToSkeletonConnector
 				continue;
 			}
 			
-			$property->setAccessible(true);
 			$property->setValue($instance, $value);
 		}
 	}

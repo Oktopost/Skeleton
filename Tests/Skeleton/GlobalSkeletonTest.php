@@ -16,10 +16,9 @@ class GlobalSkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$p = (new \ReflectionClass(GlobalSkeleton::class))->getProperty('skeletons');
-		$p->setAccessible(true);
 		$p->setValue(GlobalSkeleton::instance(), []);
 		
 	}
@@ -63,12 +62,11 @@ class GlobalSkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 *  @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_get_NoSkeletonsDefined_ErrorThrown()
 	{
 		GlobalSkeleton::instance()->add('b', $this->mockISkeletonSource());
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		GlobalSkeleton::instance()->get('a');
 	}

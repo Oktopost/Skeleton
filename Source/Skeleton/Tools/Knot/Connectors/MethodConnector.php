@@ -87,7 +87,6 @@ class MethodConnector extends AbstractObjectToSkeletonConnector
 				continue;
 			}
 				
-			$method->setAccessible(true);
 			$method->invoke($instance, $value);
 		}
 	}

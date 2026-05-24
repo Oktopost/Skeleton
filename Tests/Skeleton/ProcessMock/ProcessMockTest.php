@@ -27,11 +27,9 @@ class ProcessMockTest extends TestCase
 		$c = new \ReflectionClass(TestSkeleton::class);
 		
 		$p = $c->getProperty('processMock');
-		$p->setAccessible(true);
 		$p->setValue(null, null);
 		
 		$p = $c->getProperty('mockProcessID');
-		$p->setAccessible(true);
 		$p->setValue(null, null);
 		
 		foreach (glob(realpath(__DIR__ . '/../../Mock') . "/process_mock.*") as $file)

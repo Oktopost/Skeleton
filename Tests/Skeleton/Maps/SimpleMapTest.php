@@ -31,13 +31,12 @@ class SimpleMapTest extends \SkeletonTestCase
 		$map->set('a', \stdClass::class);
 	}
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerAlreadyDefinedException
-	 */
 	public function test_set_KeyAlreadySet_ErrorIsThrown()
 	{
 		$map = $this->getSimpleMap();
 		$map->set('a', \stdClass::class);
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerAlreadyDefinedException::class);
 		
 		$map->set('a', \stdClass::class);
 	}
@@ -102,12 +101,12 @@ class SimpleMapTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_get_NoImplementerDefinedForKey_ErrorIsThrown()
 	{
 		$map = $this->getSimpleMap();
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
+		
 		$map->get("a");
 	}
 	

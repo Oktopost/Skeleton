@@ -159,12 +159,12 @@ class PropertyConnectorTest extends \SkeletonTestCase
 		$this->assertEquals('value', $instance->get());
 	}
 	
-	/**
-	 * @expectedException \Exception
-	 */
 	public function test_connect_PropertyHasNoType_ErrorThrown()
 	{
 		$obj = $this->getPropertyConnector();
+		
+		$this->expectException(\Exception::class);
+		
 		$this->invokeConnect($obj, test_PropertyConnector_Helper_NoType::class);
 	}
 	
@@ -203,13 +203,12 @@ class PropertyConnectorTest extends \SkeletonTestCase
 		$this->assertContextLoaded('n', test_PropertyConnector_ContextByPropertyType::class, 123);
 	}
 
-	/**
-	 * @expectedException \Skeleton\Exceptions\MissingContextException
-	 */
 	public function test_connect_ContextNotSet_ExceptionThrown()
 	{
 		$obj = $this->getPropertyConnector();
 		$inst = new test_PropertyConnector_ContextByAnnotation();
+		
+		$this->expectException(\Skeleton\Exceptions\MissingContextException::class);
 		
 		$obj->connect(new \ReflectionClass($inst), $inst, null);
 	}

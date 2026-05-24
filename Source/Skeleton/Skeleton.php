@@ -91,7 +91,7 @@ class Skeleton implements ISkeletonSource, IBoneConstructor
 		return $this;
 	}
 	
-	public function setConfigLoader(IConfigLoader $loader = null, ?string $namespaceLimit = null): Skeleton
+	public function setConfigLoader(?IConfigLoader $loader = null, ?string $namespaceLimit = null): Skeleton
 	{
 		if ($loader)
 		{

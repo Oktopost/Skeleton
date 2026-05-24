@@ -45,7 +45,6 @@ class SkeletonTest extends \SkeletonTestCase
 		
 		$ref = new \ReflectionClass(GlobalSkeleton::class);
 		$instanceProperty = $ref->getProperty('instance');
-		$instanceProperty->setAccessible(true);
 		$instanceProperty->setValue(null, $global);
 		
 		return $global;
@@ -76,11 +75,10 @@ class SkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$ref = new \ReflectionClass(GlobalSkeleton::class);
 		$instanceProperty = $ref->getProperty('instance');
-		$instanceProperty->setAccessible(true);
 		$instanceProperty->setValue(null, null);
 	}
 	
@@ -102,12 +100,12 @@ class SkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\InvalidKeyException
-	 */
 	public function test_get_KeyIsNotString_ErrorThrown()
 	{
 		$s = new Skeleton();
+		
+		$this->expectException(\Skeleton\Exceptions\InvalidKeyException::class);
+		
 		$s->get(12);
 	}
 	
@@ -124,7 +122,6 @@ class SkeletonTest extends \SkeletonTestCase
 	
 	/**
 	 * Ignore missing value, this is not tested by this unit test.
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
 	 */
 	public function test_get_NotClassInMap_ConfigLoaderCalled()
 	{
@@ -134,12 +131,13 @@ class SkeletonTest extends \SkeletonTestCase
 		
 		$loader->expects($this->atLeastOnce())->method('tryLoad');
 		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
+		
 		$s->get('a\b');
 	}
 	
 	/**
 	 * Ignore missing value, this is not tested by this unit test.
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
 	 */
 	public function test_get_ConfigLoaderCalledWithCorrectValues()
 	{
@@ -148,6 +146,8 @@ class SkeletonTest extends \SkeletonTestCase
 		$loader = $this->mockConfigLoader($s);
 		
 		$loader->expects($this->once())->method('tryLoad')->with('a');
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$s->get('a\b');
 	}
@@ -196,7 +196,6 @@ class SkeletonTest extends \SkeletonTestCase
 	
 	/**
 	 * Ignore missing value, this is not tested by this unit test.
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
 	 */
 	public function test_get_SkeletonUseGlobalFlagNotSet_GlobalNotCalled()
 	{
@@ -204,6 +203,8 @@ class SkeletonTest extends \SkeletonTestCase
 		$s = new Skeleton();
 		
 		$global->expects($this->never())->method('get');
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$s->get('a');
 	}
@@ -234,7 +235,6 @@ class SkeletonTest extends \SkeletonTestCase
 	
 	/**
 	 * Ignore missing value, this is not tested by this unit test.
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
 	 */
 	public function test_get_FunctionUseGlobalFlagIsFalse_GlobalNotCalled()
 	{
@@ -243,6 +243,8 @@ class SkeletonTest extends \SkeletonTestCase
 		$s->useGlobal();
 		
 		$global->expects($this->never())->method('get');
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$s->get('a', null, true);
 	}
@@ -259,12 +261,12 @@ class SkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\InvalidKeyException
-	 */
 	public function test_set_KeyIsNotString_ErrorThrown()
 	{
 		$s = new Skeleton();
+		
+		$this->expectException(\Skeleton\Exceptions\InvalidKeyException::class);
+		
 		$s->set(12, "a");
 	}
 	
@@ -291,13 +293,16 @@ class SkeletonTest extends \SkeletonTestCase
 		$s = new Skeleton();
 		$map = $this->mockMap($s);
 		
-		$map->expects($this->at(0))
-			->method('set')
-			->with('a', 'val', Type::ByValue);
+		$expected = [
+			['a', 'val', Type::ByValue],
+			['b', 'val', Type::ByValue],
+		];
 		
-		$map->expects($this->at(1))
+		$map->expects($this->exactly(2))
 			->method('set')
-			->with('b', 'val', Type::ByValue);
+			->willReturnCallback(function ($key, $value, $flags) use (&$expected) {
+				$this->assertSame(array_shift($expected), [$key, $value, $flags]);
+			});
 		
 		$s->set(['a', 'b'], 'val', Type::ByValue);
 	}
@@ -378,9 +383,6 @@ class SkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_setConfigLoader_PassNamespaceLimit_KeysOutsideLimitAreNotLoaded() 
 	{
 		/** @var \PHPUnit_Framework_MockObject_MockObject|IConfigLoader $loader */
@@ -394,6 +396,8 @@ class SkeletonTest extends \SkeletonTestCase
 			->expects($this->never())
 			->method('tryLoad');
 		
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$s->get('Hello\World');
 	}
@@ -423,9 +427,6 @@ class SkeletonTest extends \SkeletonTestCase
 		self::assertEquals(123, $s->get('ABC\World'));
 	}
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_setConfigLoader_PassNamespaceLimit_KeyIsShorterThenLimit() 
 	{
 		/** @var \PHPUnit_Framework_MockObject_MockObject|IConfigLoader $loader */
@@ -439,6 +440,8 @@ class SkeletonTest extends \SkeletonTestCase
 			->expects($this->never())
 			->method('tryLoad');
 		
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$s->get('AB');
 	}
@@ -535,11 +538,11 @@ class SkeletonTest extends \SkeletonTestCase
 	public function test_for_InstancePassed_InstanceContextReferenceReturned()
 	{
 		$s = new Skeleton();
-		
 		$obj = new \stdClass();
-		$s->context($obj);
 		
-		self::assertEquals($obj->{ContextManager::CONTEXT_PROPERTY_NAME}, $s->for($obj));
+		$context = $s->context($obj);
+
+		self::assertSame($context, $s->for($obj)->context());
 	}
 	
 	public function test_for_ArrayPassed_InstanceContextForArrayReturned()
@@ -619,9 +622,6 @@ class SkeletonTest extends \SkeletonTestCase
 		self::assertEquals($s->get($key), '12345');
 	}
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_create_ConfigLoaderIsSetupAndLimitedToNamespace(): void
 	{
 		$keySuccess = 'ConfigLoaderIsSetupAndLimited\\ABC';
@@ -630,6 +630,9 @@ class SkeletonTest extends \SkeletonTestCase
 		
 		
 		self::assertEquals('12345', $s->get($keySuccess));
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
+		
 		$s->get($keyFail);
 	}
 	

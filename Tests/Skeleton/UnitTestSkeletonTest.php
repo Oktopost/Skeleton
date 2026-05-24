@@ -231,9 +231,6 @@ class UnitTestSkeletonTest extends \SkeletonTestCase
 	}
 	
 	
-	/**
-	 * @expectedException \Skeleton\Exceptions\ImplementerNotDefinedException
-	 */
 	public function test_clear_ValueReset()
 	{
 		$skeleton = new Skeleton();
@@ -241,6 +238,8 @@ class UnitTestSkeletonTest extends \SkeletonTestCase
 		
 		$testSkeleton->override('a', 'b');
 		$testSkeleton->clear();
+		
+		$this->expectException(\Skeleton\Exceptions\ImplementerNotDefinedException::class);
 		
 		$testSkeleton->get('a');
 	}

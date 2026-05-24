@@ -4,7 +4,7 @@ namespace Skeleton;
 
 class TestSkeletonTest extends \SkeletonTestCase
 {
-	public function tearDown()
+	public function tearDown(): void
 	{
 		parent::tearDown();
 		TestSkeleton::unset();

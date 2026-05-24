@@ -92,11 +92,9 @@ class KnotTest extends \SkeletonTestCase
 	}
 	
 
-	/**
-	 * @expectedException \Skeleton\Exceptions\MissingContextException
-	 */
 	public function test_load_ContextAnnotationPresent_MissingContext_ExceptionThrown()
 	{
+		$this->expectException(\Skeleton\Exceptions\MissingContextException::class);
 		$knot = $this->getKnot();
 		$knot->load(test_Knot_Helper_Context::class, null);
 	}
@@ -104,25 +102,31 @@ class KnotTest extends \SkeletonTestCase
 	public function test_load_ContextAnnotationPresent_ContextSet()
 	{
 		$knot = $this->getKnot();
-		$res = $knot->load(test_Knot_Helper_Context::class, $this->getContextReference());
+		$context = $this->getContextReference();
 		
-		self::assertObjectHasAttribute(ContextManager::CONTEXT_PROPERTY_NAME, $res);
+		$res = $knot->load(test_Knot_Helper_Context::class, $context);
+		
+		self::assertSame($context, ContextManager::get($res, new Skeleton()));
 	}
 	
 	public function test_load_ContextAnnotationPresentInInheritedClass_ContextSet()
 	{
 		$knot = $this->getKnot();
-		$res = $knot->load(test_Knot_Helper_ChildOfContext::class, $this->getContextReference());
+		$context = $this->getContextReference();
 		
-		self::assertObjectHasAttribute(ContextManager::CONTEXT_PROPERTY_NAME, $res);
+		$res = $knot->load(test_Knot_Helper_ChildOfContext::class, $context);
+		
+		self::assertSame($context, ContextManager::get($res, new Skeleton()));
 	}
 	
 	public function test_load_AutoloadInInheritedClassAndContextIsPresent_ContextSet()
 	{
 		$knot = $this->getKnot();
-		$res = $knot->load(test_Knot_Helper_ChildOfAutoloadEmpty::class, $this->getContextReference());
+		$context = $this->getContextReference();
 		
-		self::assertObjectHasAttribute(ContextManager::CONTEXT_PROPERTY_NAME, $res);
+		$res = $knot->load(test_Knot_Helper_ChildOfAutoloadEmpty::class, $context);
+		
+		self::assertSame($context, ContextManager::get($res, new Skeleton()));
 	}
 	
 	public function test_load_ContextSanityForProperty()
